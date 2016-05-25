@@ -62,18 +62,35 @@
       });
 
       var CommentBox = React.createClass({
+        getInitialState: function() { // １回のみ実行。コンポーネントの初期状態をセットアップ
+          return {data: []}
+        },
+        // コンポーネント初期化後にreactから自動的に呼ばれるメソッド
+        componentDidMount: function() {
+          $.ajax({
+            url: this.props.url,
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+              this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+            }.bind(this)
+          });
+        },
         render: function() {
           return (
             <div className="commentBox">
               <h1>Comments</h1>
-              <CommentList data={this.props.data}/>
+              <CommentList data={this.state.data}/>
               <CommentForm />
             </div>
           );
         }
       });
       ReactDOM.render( // 最終的にHTMLにレンダリングされるReactコンポーネントのツリーを返す
-        <CommentBox data={data} />,
+        <CommentBox url="/api/comments" />,
         document.getElementById('content') // 生DOMの要素に注入
       );
 
