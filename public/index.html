@@ -108,7 +108,19 @@
               }.bind(this)
           });
         },
+        /*
+        *  comment
+        *  {author: ユーザ入力値, text: ユーザ入力値}
+        * */
         handleCommentSubmit: function(comment) {
+          var comments = this.state.data;
+          // idを新しいコメントにセットする。サーバーによって生成されたidによって
+          // 置き換えられます。製品版においてDate.now()をおそらく使わなくなり、
+          // 適切により健全なシステムを持つことになるでしょう。
+          comment.id = Date.now();
+          var newComments = comments.concat([comment]);
+          this.setState({data: newComments});
+
           // submit to the server and refresh list
           $.ajax({
             url: this.props.url,
@@ -119,6 +131,7 @@
               this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
+              this.setState({data: comments});
               console.error(this.props.url, status, err.toString());
             }.bind(this)
           });
